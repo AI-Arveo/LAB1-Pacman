@@ -90,24 +90,53 @@ def depthFirstSearch(problem):
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    """
+    initialiseer je set (om bij te houden of je die node al hebt doorzocht,
+    ook je stack wordt eerst geïnitialiseerd en dan wordt de start node hierop
+    gepushed.
+    """
     visited = set()
     dfsStack = util.Stack()
     dfsStack.push(problem.getStartState())
-    while (not DFSstack.isEmpty()):
-        node = DFSstack.pop()
-        visited.add(state)
-        if (problem.isGoalState(node)):
-            return node
-        if (depth > l):
-            result = cutoff
-        else if (node not in visited):
-            for (successor in )
-        if (not problem.getSuccessors):
-            return None
-        if (state):
-            print(problem.getStartState())
-        # if (problem.getSuccessors[0] == problem.isGoalState):
-        #     return
+    while (not dfsStack.isEmpty()):
+        """
+        Je popt de eerste op de stack om deze te gaan doorzoeken. Dit is een tuple van de
+        positie van de node en van de actie die is ondernomen om daar te geraken. Bij de
+        start node is dit bv.: (5,5) hierbij is geen action omdat je ook nog niets hebt 
+        moeten doen om hier te geraken. 
+        """
+        node, actions = dfsStack.pop()
+        """
+        Wat gebeurt er als de state wel al een keer doorlopen is?
+        -> dan doe je verder niets. Maar dan pop je die enkel (zie hierboven)
+        De while lus is nog niet gedaan en dan check je de andere nodes op de zelfde layer
+        van je tree. Als deze nog niet gezien is ga je hier dieper in. Als deze ook al gezien
+        pop je ook deze. Zodat je een layer hoger in je tree gaat tot je een node vind die
+        je nog niet hebt bekeken.
+        """
+        if (node not in visited):
+            """
+            Als je de state/positie nog niet hebt gezien, dan maak zet je dit in je set
+            zodat je vanaf dan weet dat die node wel is doorlopen
+            """
+            visited.add(node)
+            if (problem.isGoalState(node)):
+                """
+                Als je uitkomt bij je goal, dan geef je de lijst van acties die nodig waren
+                zoals bij tinyMazeSearch
+                """
+                return actions
+            for successor in problem.getSuccessors(node):
+                """
+                Als je niet je goal hebt bereikt, zet je alle successors op de stack.
+                Doordat de stack LIFO is wordt steeds de eerste node bekeken
+                => depth first, tot je ooit een state tegenkomt die je al eens hebt gezien
+                hebt -> dus in visited. Dan begin je ze te poppen en dus terug hoger in je
+                tree te gaan. 
+                """
+                if (successor not in visited):
+                    dfsStack.push(successor)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
