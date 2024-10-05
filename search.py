@@ -144,6 +144,41 @@ def breadthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+    """
+        initialiseer je set (om bij te houden of je die node al hebt doorzocht,
+        ook je stack wordt eerst geïnitialiseerd en dan wordt de start node hierop
+        gepushed.
+        """
+    bfsVisited = []
+    bfsQueue = util.Queue() #Voor de Breadth first search gaan we een queue gebruiken ipv een stack
+
+    node = problem.getStartState()
+
+    """
+    Als ons problem al de goal state is gaan we een lege queue terug sturen. (Want initele positie is ook de eindpositie)
+    """
+    if problem.isGoalState(node):
+        return []
+
+    """
+    Is dit niet zo zoek verder en push de start op queue
+    """
+    bfsQueue.push(node)
+    while (not bfsQueue.isEmpty()):
+        node,actions = bfsQueue.pop()
+        bfsVisited.append(node) #Voeg de node toe aan visited
+
+        if (problem.isGoalState(node)): #Als je uitkomt bij je goal, dan return je de lijst van acties die nodig waren (=de queue)
+            return actions
+        if problem.getSuccessors(node):
+            for successor in problem.getSuccessors(node): # Haal de volgende state en actie uit de neighbour
+                if successor[0] not in bfsVisited and successor[0] not in bfsQueue.list:
+                    # Even wat uitleg: We kijken of onze succesor nog niet bezocht is en of hij nog niet in de queue staat,
+
+                    nextAction = actions + [successor[1]] # bereken het nieuwe pad
+                    bfsQueue.push(successor[0], nextAction)
+    util.raiseNotDefined()
+
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
