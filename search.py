@@ -128,47 +128,97 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
 
     """
         initialiseer je set (om bij te houden of je die node al hebt doorzocht,
-        ook je stack wordt eerst geïnitialiseerd en dan wordt de start node hierop
+        ook je Queue wordt eerst geïnitialiseerd en dan wordt de start node hierop
         gepushed.
-        """
+    """
+    bfsQueue = Queue()  # Voor de Breadth first search gaan we een queue gebruiken ipv een stack
     bfsVisited = []
-    bfsQueue = util.Queue() #Voor de Breadth first search gaan we een queue gebruiken ipv een stack
-
-    node = problem.getStartState()
-
     """
-    Als ons problem al de goal state is gaan we een lege queue terug sturen. (Want initele positie is ook de eindpositie)
+    Als onze start state al de goal state is gaan we een lege queue terug sturen. (Want initele positie is ook de eindpositie)
     """
-    if problem.isGoalState(node):
+    if problem.isGoalState(problem.getStartState()):
         return []
 
     """
     Is dit niet zo zoek verder en push de start op queue
     """
-    bfsQueue.push(node)
-    while (not bfsQueue.isEmpty()):
-        node,actions = bfsQueue.pop()
-        bfsVisited.append(node) #Voeg de node toe aan visited
+    bfsQueue.push((problem.getStartState(),[]))
 
-        if (problem.isGoalState(node)): #Als je uitkomt bij je goal, dan return je de lijst van acties die nodig waren (=de queue)
-            return actions
-        if problem.getSuccessors(node):
-            for successor in problem.getSuccessors(node): # Haal de volgende state en actie uit de neighbour
-                if successor[0] not in bfsVisited and successor[0] not in bfsQueue.list:
-                    # Even wat uitleg: We kijken of onze succesor nog niet bezocht is en of hij nog niet in de queue staat,
+    while bfsQueue:
 
-                    nextAction = actions + [successor[1]] # bereken het nieuwe pad
-                    bfsQueue.push(successor[0], nextAction)
-    util.raiseNotDefined()
+        #Als er niets meer in de queue zit gaan we uit de loop gaan, dit heb ik aangepast door while bfsQueue te plaatsen dus is overbodig nu
+        # if bfsQueue.isEmpty():
+        #     return []
+
+        node,path = bfsQueue.pop() #Neem de huidige node en het pad
+        bfsVisited.append(node)
+        print(node, end="")
+
+        if problem.isGoalState(node): #Als je uitkomt bij je goal, dan return je de lijst van acties die nodig waren (=het path)
+            return path
+
+        nextElement = problem.getSuccessors(node) #Error handling en leesbaarheid
+
+        if nextElement:
+            for successor in nextElement: # Haal de volgende state en actie uit de neighbour
+                if successor[0] not in bfsVisited and successor[0] not in (state[0] for state in bfsQueue.list): #
+
+                    # Even wat uitleg: Neem de eerstvolgende successor en we kijken of deze nog niet bezocht is.
+                    # Ook ki9jken ze of hij nog niet in 1 van de states staat van de Queue want dan moeten we dat niet meer bekijken
+                    newPath = path + [successor[1]]  # Calculate new path
+                    bfsQueue.push((successor[0], newPath))
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    ucsVisited = []
+    ucsQueue = PriorityQueue()
+
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    ucsQueue.push((problem.getStartState(), [], 0),0)
+    current_cost = 0
+
+    while ucsQueue:
+        node, path, cost = ucsQueue.pop()#Neem de huidige node en de acties die we al hebben genomen
+        ucsVisited.append(node)
+
+        if problem.isGoalState(node): #Als je uitkomt bij je goal, dan return je de lijst van acties die nodig waren (=het path)
+            return path
+
+        nextElement = problem.getSuccessors(node)
+
+        #state = problem.getCostOfActions(node)
+        current_cost += cost
+        #Voeg nieuwe states toe an de queue
+        if nextElement:
+            for successor, cost in nextElement:
+                total_cost = 0
+                total_cost += cost
+                if successor not in ucsVisited or total_cost<ucsVisited[successor][0]:
+                    newPath = path + [successor[1]]
+                    ucsVisited[successor][0] = (successor[0], newPath,total_cost)
+
+                    cost = problem.getCostOfActions(newPath)
+
+                    ucsQueue.push((successor[0], newPath), cost)
+
+                # elif successor[0] not in ucsVisited or total_cost<current_cost:
+                #
+                #     newCost = problem.getCostOfActions(path + [successor[1]])
+                #
+                #     # Als de huidige cost hoger is dan de nieuwe cost gaan we het pad veranderen
+                #     if cost > newCost:
+                #         newPath = path + [successor[1]]
+                #         ucsQueue.update((successor[0], newPath), newCost)
+
 
 def nullHeuristic(state, problem=None):
     """
