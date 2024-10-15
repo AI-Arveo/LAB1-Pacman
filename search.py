@@ -87,56 +87,42 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    """
-    initialiseer je set (om bij te houden of je die node al hebt doorzocht,
-    ook je stack wordt eerst geïnitialiseerd en dan wordt de start node hierop
-    gepushed.
-    """
     visited = set()
     dfsStack = util.Stack()
-    dfsStack.push(problem.getStartState())
-    while (not dfsStack.isEmpty()):
-        """
-        Je popt de eerste op de stack om deze te gaan doorzoeken. Dit is een tuple van de
-        positie van de node en van de actie die is ondernomen om daar te geraken. Bij de
-        start node is dit bv.: (5,5) hierbij is geen action omdat je ook nog niets hebt 
-        moeten doen om hier te geraken. 
-        """
-        node, actions = dfsStack.pop()
-        """
-        Wat gebeurt er als de state wel al een keer doorlopen is?
-        -> dan doe je verder niets. Maar dan pop je die enkel (zie hierboven)
-        De while lus is nog niet gedaan en dan check je de andere nodes op de zelfde layer
-        van je tree. Als deze nog niet gezien is ga je hier dieper in. Als deze ook al gezien
-        pop je ook deze. Zodat je een layer hoger in je tree gaat tot je een node vind die
-        je nog niet hebt bekeken.
-        """
-        if (node not in visited):
-            """
-            Als je de state/positie nog niet hebt gezien, dan maak zet je dit in je set
-            zodat je vanaf dan weet dat die node wel is doorlopen
-            """
-            visited.add(node)
-            if (problem.isGoalState(node)):
-                """
-                Als je uitkomt bij je goal, dan geef je de lijst van acties die nodig waren
-                zoals bij tinyMazeSearch
-                """
-                return actions
-            for successor in problem.getSuccessors(node):
-                """
-                Als je niet je goal hebt bereikt, zet je alle successors op de stack.
-                Doordat de stack LIFO is wordt steeds de eerste node bekeken
-                => depth first, tot je ooit een state tegenkomt die je al eens hebt gezien
-                hebt -> dus in visited. Dan begin je ze te poppen en dus terug hoger in je
-                tree te gaan. 
-                """
-                if (successor not in visited):
-                    dfsStack.push(successor)
+    actions = []
+    dfsStack.push((problem.getStartState(),actions))
+    state = problem.getStartState()
+
+    """
+    Je popt de eerste op de stack om deze te gaan doorzoeken. Dit is een tuple van de
+    positie van de node en van de actie die is ondernomen om daar te geraken. Bij de
+    start node is dit bv.: (5,5) hierbij is geen action omdat je ook nog niets hebt 
+    moeten doen om hier te geraken. 
+    """
+    while (not problem.isGoalState(state)):
+        # pop de stack om je xy te krijgen en je actions (wat een list [] is met alle acties nodig om tot
+        # die xy waarde te komen.
+        xy, actions = dfsStack.pop()
+        # markeer die xy als visited zodat je hier niet nog eens naartoe gaat. En dus een oneindige lus
+        # voorkomt
+        visited.add(xy)
+        # check of die gepopte xy coordinaat de goal is, zoja return de actions die hierbij op de stack staan.
+        if (problem.isGoalState(xy)):
+            return actions
+        # itereer over de successors (kan ook reversed(..)), de cost is hierbij overbodig. Maar dit kan handig zijn
+        # voor andere algoritmes met cost
+        for successor, action, costs in problem.getSuccessors(xy):
+            # als je de successor nog niet bezocht hebt, push je die op de stack. Samen met de actions om tot bij
+            # die successor te geraken.
+            if (successor not in visited):
+                # De actions bereken je door action (van de successor) toe te voegen bij de actions list
+                # LET OP: push niet actions.append(..) op de stack. Als je dit doet, dan maak je geen
+                # copie en ben je dus met references bezig => als je actions later aanpast => wordt ook
+                # de stack aangepast.
+                # Werk daarom met een nieuwe list (new_actions) die een copie is met de nieuwe action erbij.
+                # dit doe je met de lijn hieronder!
+                new_actions = actions + [action]
+                dfsStack.push((successor, new_actions))
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
