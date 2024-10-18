@@ -307,9 +307,9 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         for corner in state[1]:
-            if corner == 1 and corner == state[0]:
-                return True
-        return False
+            if corner == 0: # als nog niet alle corners bezocht zien is de goal nog steeds niet behaald.
+                return False
+        return True
 
 
     def getSuccessors(self, state):
@@ -325,7 +325,7 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         currentPosition = state[0]  # De eerste helft van de tuple bevat de positie
-        cornersState = state[1]  # De tweede helft bevat de hoekstatus (bezocht of niet)
+        cornersState = list(state[1])  # De tweede helft bevat de hoekstatus (bezocht of niet) --> list
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -351,7 +351,7 @@ class CornersProblem(search.SearchProblem):
 
                 # Controleer of de nieuwe positie een hoek is
                 if nextPosition in self.corners:
-                    # Vind de index van deze hoek in de lijst van hoeken
+                    # Vind de index van deze (specifieke) hoek in de lijst van hoeken
                     cornerIndex = self.corners.index(nextPosition)
 
                     # Markeer deze hoek als bezocht in de nieuwe hoekstatus
