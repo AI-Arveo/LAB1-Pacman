@@ -73,6 +73,7 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
+    # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=dfs
     """
     Search the deepest nodes in the search tree first.
 
@@ -126,6 +127,7 @@ def depthFirstSearch(problem):
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
+    #python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=bfs
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     from util import Queue
@@ -220,8 +222,23 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
+    #python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+    """Search the node that has the lowest combined cost and heuristic firt."""
     "*** YOUR CODE HERE ***"
+    aStarQueue = util.PriorityQueue()
+    actions = []
+    state = problem.getStartState()
+    aStarQueue.push((state,actions,0),0)
+    visited = set()
+    while (not problem.isGoalState(state)):
+        xy, actions, totalCost = aStarQueue.pop()
+        if (problem.isGoalState(xy)):
+            return actions
+        if (xy not in visited):
+            visited.add(xy)
+            for successor, action, cost in problem.getSuccessors(xy):
+                new_actions = actions + [action]
+                aStarQueue.push((successor,new_actions,cost+totalCost),cost+totalCost+heuristic(successor,problem))
     util.raiseNotDefined()
 
 

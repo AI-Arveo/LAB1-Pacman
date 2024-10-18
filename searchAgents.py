@@ -298,8 +298,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-
         return self.startingPosition, self.initialState #Ga terug naar de startpositie en zet bezochte corners op 0.
+
 
     def isGoalState(self, state):
         """
@@ -310,6 +310,7 @@ class CornersProblem(search.SearchProblem):
             if corner == 1 and corner == state[0]:
                 return True
         return False
+
 
     def getSuccessors(self, state):
         """
@@ -396,6 +397,8 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    print('test')
+
     return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
