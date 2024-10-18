@@ -277,17 +277,20 @@ class CornersProblem(search.SearchProblem):
         """
         Stores the walls, pacman's starting position and corners.
         """
-        self.walls = startingGameState.getWalls()
-        self.startingPosition = startingGameState.getPacmanPosition()
+        self.walls = startingGameState.getWalls() #Geeft de locatie van de muren terug
+        self.startingPosition = startingGameState.getPacmanPosition() #Geeft de startlocatie terug uit de gamestate.
         top, right = self.walls.height-2, self.walls.width-2
-        self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        self.corners = ((1,1), (1,top), (right, 1), (right, top)) # locatie van de corners
+
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
-                print('Warning: no food in corner ' + str(corner))
+                print('Warning: no food in corner ' + str(corner)) # Deze heb je al bezocht
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.initialState  = [0,0,0,0] #Houdt bij welke hoeken we hebben bezocht
+
 
     def getStartState(self):
         """
@@ -297,12 +300,17 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
+        return self.startingPosition, self.initialState #Ga terug naar de startpositie en zet bezochte corners op 0.
+
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+        for corner in self.corners:
+            if corner == 0:
+                return not state[corner]
 
     def getSuccessors(self, state):
         """
@@ -316,6 +324,9 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        currentPosition = state[0]  # De eerste helft van de tuple bevat de positie
+        cornersState = state[1]  # De tweede helft bevat de hoekstatus (bezocht of niet)
+
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
@@ -325,6 +336,32 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x, y = state[0]
+
+
+            dx, dy = Actions.directionToVector(action) #de beweging dat hij kan uitvoeren
+            #state[0].getLegalPacmanActions()
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            if not self.walls[nextx][nexty]:  # Als we geen muur raken
+                nextPosition = (nextx, nexty)
+
+                # Kopieer de huidige hoekstatus, zodat je deze kunt aanpassen
+                newVisitedCorners = list(cornersState)
+
+                # Controleer of de nieuwe positie een hoek is
+                if nextPosition in self.corners:
+                    # Vind de index van deze hoek in de lijst van hoeken
+                    cornerIndex = self.corners.index(nextPosition)
+
+                    # Markeer deze hoek als bezocht in de nieuwe hoekstatus
+                    newVisitedCorners[cornerIndex] = True
+
+                # Maak de nieuwe state (positie, nieuwe hoekstatus)
+                nextState = (nextPosition, tuple(newVisitedCorners))
+
+                # Voeg de opvolger toe aan de lijst met de kosten van 1
+                successors.append((nextState, action, 1))  # Kosten zijn hier 1
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
