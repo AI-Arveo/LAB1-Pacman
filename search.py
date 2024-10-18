@@ -192,45 +192,37 @@ def uniformCostSearch(problem):
     from util import PriorityQueue
 
     ucsVisited = []
-    ucsQueue = PriorityQueue()
+    ucsQueue = PriorityQueue() #De queue bestaat uit: (x,y), [path] en priority
 
     if problem.isGoalState(problem.getStartState()):
         return []
-    ucsQueue.push((problem.getStartState(), [], 0),0)
-    current_cost = 0
 
-    while ucsQueue:
-        node, path, cost = ucsQueue.pop()#Neem de huidige node en de acties die we al hebben genomen
+    ucsQueue.push((problem.getStartState(), []),0) #Begin bij het start punt, de cost en prioriteit = 0
+
+    while not ucsQueue.isEmpty():
+
+        node, path = ucsQueue.pop() #Neem de huidige node en de acties die we al hebben genomen
         ucsVisited.append(node)
 
         if problem.isGoalState(node): #Als je uitkomt bij je goal, dan return je de lijst van acties die nodig waren (=het path)
             return path
 
-        nextElement = problem.getSuccessors(node)
+        # Bekijk alle nabije mogelijke paden van de huidige positie
+        for nextState, action, cost in problem.getSuccessors(node):
+            if nextState not in ucsVisited:
+                new_path = path + [action]
+                new_cost = problem.getCostOfActions(new_path)
 
-        #state = problem.getCostOfActions(node)
-        current_cost += cost
-        #Voeg nieuwe states toe an de queue
-        if nextElement:
-            for successor, cost in nextElement:
-                total_cost = 0
-                total_cost += cost
-                if successor not in ucsVisited or total_cost<ucsVisited[successor][0]:
-                    newPath = path + [successor[1]]
-                    ucsVisited[successor][0] = (successor[0], newPath,total_cost)
-
-                    cost = problem.getCostOfActions(newPath)
-
-                    ucsQueue.push((successor[0], newPath), cost)
-
-                # elif successor[0] not in ucsVisited or total_cost<current_cost:
-                #
-                #     newCost = problem.getCostOfActions(path + [successor[1]])
-                #
-                #     # Als de huidige cost hoger is dan de nieuwe cost gaan we het pad veranderen
-                #     if cost > newCost:
-                #         newPath = path + [successor[1]]
-                #         ucsQueue.update((successor[0], newPath), newCost)
+                # Als deze state nog niet toegevoegd was of als er een 'cheaper' state gevonden is
+                if nextState not in (state[2][0] for state in ucsQueue.heap): #[2] geeft onze het 3e element --> de priority, [0] de coordinaten
+                    ucsQueue.push((nextState, new_path), new_cost)
+                else:
+                    # Als er al een pad bestaat naar de state, kijk of hij goedkoper is.
+                    for state in ucsQueue.heap:
+                        if state[2][0] == nextState:
+                            old_cost = problem.getCostOfActions(state[2][1])#[2] prioriteit, [1] path
+                    if new_cost < old_cost:
+                        ucsQueue.update((nextState, new_path), new_cost)
 
 
 def nullHeuristic(state, problem=None):
