@@ -298,7 +298,6 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
         return self.startingPosition, self.initialState #Ga terug naar de startpositie en zet bezochte corners op 0.
 
@@ -307,10 +306,10 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-        for corner in self.corners:
-            if corner == 0:
-                return not state[corner]
+        for corner in state[1]:
+            if corner == 1 and corner == state[0]:
+                return True
+        return False
 
     def getSuccessors(self, state):
         """
