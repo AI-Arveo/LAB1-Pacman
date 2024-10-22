@@ -346,7 +346,7 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:  # Als we geen muur raken
                 nextPosition = (nextx, nexty)
 
-                # Kopieer de huidige hoekstatus, zodat je deze kunt aanpassen
+                # Kopieer de huidige hoek, zodat je deze kunt aanpassen
                 newVisitedCorners = list(cornersState)
 
                 # Controleer of de nieuwe positie een hoek is
@@ -354,14 +354,14 @@ class CornersProblem(search.SearchProblem):
                     # Vind de index van deze (specifieke) hoek in de lijst van hoeken
                     cornerIndex = self.corners.index(nextPosition)
 
-                    # Markeer deze hoek als bezocht in de nieuwe hoekstatus
+                    # Markeer deze hoek als bezocht in de nieuwe hoek state
                     newVisitedCorners[cornerIndex] = True
 
                 # Maak de nieuwe state (positie, nieuwe hoekstatus)
                 nextState = (nextPosition, tuple(newVisitedCorners))
 
-                # Voeg de opvolger toe aan de lijst met de kosten van 1
-                successors.append((nextState, action, 1))  # Kosten zijn hier 1
+                # Voeg de opvolger toe aan de lijst met een kost van 1
+                successors.append((nextState, action, 1))  # Kost is hier 1
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -400,28 +400,22 @@ def cornersHeuristic(state, problem):
     #print("corners:"+str(corners))
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     x,y = state[0]
-    if (problem.isGoalState(state)):
+    visited_corners = state[1]  # Corners visited so far
+
+    if problem.isGoalState(state):
         return 0
-    for corner in corners:
-        distance.append(((x-corner[0])**2+(y-corner[1])**2) ** 0.5)
-    goal_index = distance.index(min(distance))
-    goal = corners[goal_index]
-    eucdis = ( (x - goal[0]) ** 2 + (y - goal[1]) ** 2 ) ** 0.5
-    #print("euclidean dist: "+str(eucdis))
-    #cprint('goal:'+str(goal))
-    # wallsList = []
-    # wallsList.append(walls[x+1][y])
-    # wallsList.append(walls[x-1][y])
-    # wallsList.append(walls[x][y+1])
-    # wallsList.append(walls[x][y-1])
-    # count = 0
-    # for w in wallsList:
-    #     count += 1
-    # if (count >= 3):
-    #     return 2
-    if (walls[x][y]):
-        return 5
-    return eucdis # Default to trivial solution
+
+    manhattan_distances = []
+    for index, corner in enumerate(corners):
+        # Only calculate distance for unvisited corners
+        if not visited_corners[index]:
+            manhattan_dist = abs(x - corner[0]) + abs(y - corner[1])
+            manhattan_distances.append(manhattan_dist)
+
+    # If there are unvisited corners, return the minimum distance
+    # Otherwise, return 0 if all corners are visited (goal state)
+    return min(manhattan_distances) if manhattan_distances else 0
+
 
     "*** 0/3 ***"
     # corners = problem.corners  # These are the corner coordinates
