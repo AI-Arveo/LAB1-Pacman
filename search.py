@@ -225,17 +225,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
     """Search the node that has the lowest combined cost and heuristic firt."""
     "*** YOUR CODE HERE ***"
+    #python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5
     aStarQueue = util.PriorityQueue()
     actions = []
     state = problem.getStartState()
     aStarQueue.push((state,actions,0),0)
-    visited = set()
+    visited = []
     while (not problem.isGoalState(state)):
         xy, actions, totalCost = aStarQueue.pop()
         if (problem.isGoalState(xy)):
             return actions
         if (xy not in visited):
-            visited.add(xy)
+            visited.append(xy)
             for successor, action, cost in problem.getSuccessors(xy):
                 new_actions = actions + [action]
                 aStarQueue.push((successor,new_actions,cost+totalCost),cost+totalCost+heuristic(successor,problem))

@@ -393,13 +393,104 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
     "*** YOUR CODE HERE ***"
-    print('test')
+    "*** 1/3 -> doing pretty much nothing -> 1937 nodes expanded***"
+    corners = problem.corners # These are the corner coordinates
+    distance = []
+    #print("corners:"+str(corners))
+    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    x,y = state[0]
+    if (problem.isGoalState(state)):
+        return 0
+    for corner in corners:
+        distance.append(((x-corner[0])**2+(y-corner[1])**2) ** 0.5)
+    goal_index = distance.index(min(distance))
+    goal = corners[goal_index]
+    eucdis = ( (x - goal[0]) ** 2 + (y - goal[1]) ** 2 ) ** 0.5
+    #print("euclidean dist: "+str(eucdis))
+    #cprint('goal:'+str(goal))
+    # wallsList = []
+    # wallsList.append(walls[x+1][y])
+    # wallsList.append(walls[x-1][y])
+    # wallsList.append(walls[x][y+1])
+    # wallsList.append(walls[x][y-1])
+    # count = 0
+    # for w in wallsList:
+    #     count += 1
+    # if (count >= 3):
+    #     return 2
+    if (walls[x][y]):
+        return 5
+    return eucdis # Default to trivial solution
 
-    return 0 # Default to trivial solution
+    "*** 0/3 ***"
+    # corners = problem.corners  # These are the corner coordinates
+    # walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    #
+    # "*** YOUR CODE HERE ***"
+    # node, unvisitedCorners = state
+    # unvisitedCorners = list(unvisitedCorners)
+    # distance = []
+    # # #print("corners:"+str(corners))
+    # # walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    # x,y = state[0]
+    # unvisitedCorners = []
+    # for corner in corners:
+    #     distance.append(abs(x-corner[0])+abs(y-corner[1]))
+    #     goal_index = distance.index(min(distance))
+    #     goal = corners[goal_index]
+    #     unvisitedCorners.append(goal)
+    # #print('goal:'+str(goal))
+    #
+    # # distfn = lambda p,q : ((p[0] - q[0])**2 + (p[1] - q[1])**2)** .5
+    # distfn = util.manhattanDistance
+    # totalDist = 0
+    # while unvisitedCorners:
+    #     #print('node:' + str(node))
+    #     dist, c = min([(distfn(node, c), c) for c in unvisitedCorners])
+    #     #print('test in while lus')
+    #     totalDist += dist
+    #     node = c
+    #     unvisitedCorners.remove(c)
+    #     #print('list corners:'+str(unvisitedCorners)+', with c:'+str(c))
+    # return totalDist
+
+    """*** 0/3 -> inconsistent heuristic -> 1670 nodes expanded ***"""
+    # corners = problem.corners
+    # distance = []
+    # maze = problem.walls
+    # x, y = state[0]
+    # for corner in corners:
+    #     distance.append(abs(x-corner[0])+abs(y-corner[1]))
+    # goal_index = distance.index(min(distance))
+    # goal = corners[goal_index]
+    # base_heuristic = util.manhattanDistance(state[0], goal)
+    #
+    # # Penalty for being near walls
+    # wall_penalty = 0
+    # x, y = state[0]
+    #
+    # # Check the surrounding cells for walls
+    # adjacent_cells = [
+    #     (x + 1, y),  # down
+    #     (x - 1, y),  # up
+    #     (x, y + 1),  # right
+    #     (x, y - 1)  # left
+    # ]
+    #
+    # for cell in adjacent_cells:
+    #     # Ensure the cell is within maze bounds
+    #     #if 0 <= cell[0] < len(maze) and 0 <= cell[1] < len(maze[0]):
+    #     if maze[cell[0]][cell[1]] == 1:  # Wall detected
+    #         wall_penalty += 1 # Example: add a +2 penalty for each adjacent wall
+    #
+    #
+    # # Add the wall penalty to the base Manhattan distance
+    # adjusted_heuristic = base_heuristic + wall_penalty
+    # if (problem.isGoalState(state)):
+    #     return 0
+    #
+    # return adjusted_heuristic
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
